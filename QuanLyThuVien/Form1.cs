@@ -59,9 +59,30 @@ namespace QuanLyThuVien
         // ============ Cau 7 ============
         private void btnSua_Click(object sender, EventArgs e)
         {
-            var kq = MessageBox.Show("Bạn có muốn xóa quyển sách này không?", "Xóa quyển sách",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (kq != DialogResult.Yes) return;
+            if (!KiemTraNhap(out string ma, out string ten, out string gia))
+                return;
+
+            try
+            {
+                using (var db = new DuLieuContext())
+                {
+                    var s = db.CongViecs.Find(ma);
+                    if (s != null)
+                    {
+                        s.TenSach = ten;
+                        s.GiaTien = gia;
+                        db.SaveChanges();
+                    }
+                }
+
+                LoadDanhSach();
+                DatTrangThaiBanDau();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi cập nhật sách: " + ex.Message, "Lỗi",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // ============ Cau 6 ============
